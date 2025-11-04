@@ -1,0 +1,44 @@
+{
+    "name": "canvas",
+    "private": true,
+    "version": "0.0.1",
+    "type": "module",
+    "scripts": {
+        "dev": "vite",
+        "build": "tsc && vite build",
+        "preview": "vite preview",
+        "server": "tsx server/server.ts",
+        "dev:full": "concurrently \"npm run server\" \"npm run dev\""
+    },
+    "devDependencies": {
+        "@tailwindcss/postcss": "^4.1.16",
+        "@types/bcryptjs": "^2.4.6",
+        "@types/cors": "^2.8.19",
+        "@types/express": "^5.0.5",
+        "@types/jsonwebtoken": "^9.0.10",
+        "@types/react": "^19.2.2",
+        "@types/react-dom": "^19.2.2",
+        "@vitejs/plugin-react": "^5.1.0",
+        "autoprefixer": "^10.4.21",
+        "concurrently": "^9.2.1",
+        "postcss": "^8.5.6",
+        "prettier": "^3.5.3",
+        "sass": "^1.86.0",
+        "tailwindcss": "^4.1.16",
+        "tsx": "^4.20.6",
+        "typescript": "~5.7.2",
+        "vite": "^6.2.2"
+    },
+    "dependencies": {
+        "@prisma/client": "^6.18.0",
+        "bcryptjs": "^3.0.3",
+        "cors": "^2.8.5",
+        "dotenv": "^17.2.3",
+        "express": "^5.1.0",
+        "jsonwebtoken": "^9.0.2",
+        "prisma": "^6.18.0",
+        "react": "^19.2.0",
+        "react-dom": "^19.2.0",
+        "uuid": "^11.1.0"
+    }
+}

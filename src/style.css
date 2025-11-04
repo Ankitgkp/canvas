@@ -1,0 +1,67 @@
+@import "tailwindcss";
+
+/* Custom Canvas Styles */
+#canvas {
+    border: 1px solid #ccc;
+    cursor: crosshair;
+    width: 1000px;
+    height: 600px;
+    border-radius: 10px;
+    background-color: white;
+}
+
+/* Brush color classes for canvas app */
+.brush-select {
+    padding: 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    border: none;
+}
+
+.brush-select.black {
+    background-color: #101010;
+}
+
+.brush-select.black:hover {
+    background-color: #4d4d4d;
+}
+
+.brush-select.blue {
+    background-color: lightskyblue;
+}
+
+.brush-select.blue:hover {
+    background-color: #b6e1fc;
+}
+
+.brush-select.yellow {
+    background-color: gold;
+}
+
+.brush-select.yellow:hover {
+    background-color: #ffe44d;
+}
+
+.brush-select.green {
+    background-color: lightgreen;
+}
+
+.brush-select.green:hover {
+    background-color: #bdf5bd;
+}
+
+.brush-select.purple {
+    background-color: mediumpurple;
+}
+
+.brush-select.purple:hover {
+    background-color: #b299e6;
+}
+
+.brush-select.red {
+    background-color: lightcoral;
+}
+
+.brush-select.red:hover {
+    background-color: #f4a4a4;
+}
