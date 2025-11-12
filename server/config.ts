@@ -6,7 +6,7 @@ export const SERVER_CONFIG = {
   NODE_ENV: process.env.NODE_ENV || "development",
   JWT_SECRET: process.env.JWT_SECRET || "fallback-secret-please-change-in-production",
   JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || "24h",
-} as const;
+};
 
 // Security configuration
 export const SECURITY_CONFIG = {

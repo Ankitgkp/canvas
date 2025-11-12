@@ -1,6 +1,6 @@
 import express from "express";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+import jwt, { SignOptions } from "jsonwebtoken";
 import { authenticateToken } from "./middleware.js";
 import { prisma } from "./database.js";
 import { SERVER_CONFIG, SECURITY_CONFIG } from "./config.js";
@@ -45,8 +45,8 @@ router.post("/register", async (req, res) => {
     // Generate JWT token
     const token = jwt.sign(
       { userId: user.id, email: user.email, username: user.username },
-      SERVER_CONFIG.JWT_SECRET,
-      { expiresIn: SERVER_CONFIG.JWT_EXPIRES_IN as string }
+      SERVER_CONFIG.JWT_SECRET as string,
+      { expiresIn: SERVER_CONFIG.JWT_EXPIRES_IN } as SignOptions
     );
 
     res.status(201).json({
@@ -67,15 +67,20 @@ router.post("/register", async (req, res) => {
 // Login route
 router.post("/login", async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { identifier, password } = req.body;
 
-    if (!email || !password) {
-      return res.status(400).json({ error: "Email and password are required" });
+    if (!identifier || !password) {
+      return res.status(400).json({ error: "Email/username and password are required" });
     }
 
-    // Find user by email
-    const user = await prisma.user.findUnique({
-      where: { email },
+    // Find user by email or username
+    const user = await prisma.user.findFirst({
+      where: {
+        OR: [
+          { email: identifier },
+          { username: identifier }
+        ]
+      }
     });
 
     if (!user) {
@@ -92,8 +97,8 @@ router.post("/login", async (req, res) => {
     // Generate JWT token
     const token = jwt.sign(
       { userId: user.id, email: user.email, username: user.username },
-      SERVER_CONFIG.JWT_SECRET,
-      { expiresIn: SERVER_CONFIG.JWT_EXPIRES_IN as string }
+      SERVER_CONFIG.JWT_SECRET as string,
+      { expiresIn: SERVER_CONFIG.JWT_EXPIRES_IN } as SignOptions
     );
 
     res.json({

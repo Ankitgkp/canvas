@@ -8,7 +8,11 @@
         "build": "tsc && vite build",
         "preview": "vite preview",
         "server": "tsx server/server.ts",
-        "dev:full": "concurrently \"npm run server\" \"npm run dev\""
+        "dev:full": "concurrently \"npm run server\" \"npm run dev\"",
+        "start": "node dist/server.js",
+        "build:server": "tsc server/server.ts --outDir dist --target es2020 --module commonjs",
+        "build:all": "npm run build && npm run build:server",
+        "postbuild": "npx prisma generate"
     },
     "devDependencies": {
         "@tailwindcss/postcss": "^4.1.16",

@@ -20,13 +20,13 @@ export class AuthService {
     return data;
   }
 
-  static async login(email: string, password: string) {
+  static async login(identifier: string, password: string) {
     const response = await fetch(`${this.BASE_URL}/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ identifier, password }),
     });
 
     const data = await response.json();

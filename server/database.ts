@@ -1,6 +1,5 @@
 import { PrismaClient } from "@prisma/client";
 
-// Create a singleton instance of Prisma Client
 class DatabaseService {
   private static instance: PrismaClient;
 

@@ -26,6 +26,15 @@ app.use(express.static(path.join(__dirname, "..", "dist")));
 // API Routes
 app.use("/api", routes);
 
+// Serve static files in production
+if (SERVER_CONFIG.NODE_ENV === "production") {
+  app.get("*", (req, res) => {
+    if (!req.path.startsWith("/api")) {
+      res.sendFile(path.join(__dirname, "..", "dist", "index.html"));
+    }
+  });
+}
+
 // Error handling middleware
 app.use(errorHandler);
 app.use(notFoundHandler);

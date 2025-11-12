@@ -7,15 +7,15 @@ interface LoginFormProps {
 }
 
 export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToRegister }) => {
-  const [email, setEmail] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !password) {
-      setError('Email and password are required');
+    if (!identifier || !password) {
+      setError('Email/Username and password are required');
       return;
     }
 
@@ -23,7 +23,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToRegis
     setLoading(true);
 
     try {
-      const result = await AuthService.login(email, password);
+      const result = await AuthService.login(identifier, password);
       AuthService.setToken(result.token);
       onSuccess();
     } catch (error) {
@@ -42,16 +42,16 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToRegis
 
       <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
-              Email Address
+            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="identifier">
+              Email or Username
             </label>
             <input
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              id="email"
-              type="email"
-              placeholder="Enter your email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              id="identifier"
+              type="text"
+              placeholder="Enter your email or username"
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
               required
             />
           </div>
