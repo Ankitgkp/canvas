@@ -11,7 +11,13 @@ export const SERVER_CONFIG = {
 // Security configuration
 export const SECURITY_CONFIG = {
   BCRYPT_SALT_ROUNDS: 10,
-  CORS_ORIGINS: process.env.CORS_ORIGINS?.split(",") || ["http://localhost:5173", "http://localhost:3000"],
+  CORS_ORIGINS: process.env.CORS_ORIGINS?.split(",") || [
+    "http://localhost:5173", 
+    "http://localhost:3000",
+    "https://*.onrender.com",
+    "https://*.railway.app",
+    "https://*.vercel.app"
+  ],
 } as const;
 
 // Database configuration

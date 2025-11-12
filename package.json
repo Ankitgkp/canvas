@@ -9,7 +9,7 @@
         "preview": "vite preview",
         "server": "tsx server/server.ts",
         "dev:full": "concurrently \"npm run server\" \"npm run dev\"",
-        "start": "NODE_ENV=production tsx server/server.ts"
+        "start": "tsx server/server.ts"
     },
     "devDependencies": {
         "autoprefixer": "^10.4.21",
