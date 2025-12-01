@@ -97,20 +97,6 @@ canvas/
 
 ## API Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/register` | Create new user |
-| POST | `/api/login` | Login user |
-| POST | `/api/verify-token` | Verify JWT token |
-| GET | `/api/profile` | Get user profile |
-| POST | `/api/rooms` | Create new room |
-| GET | `/api/rooms` | Get user's rooms |
-| GET | `/api/rooms/:code` | Join room by code |
-| GET | `/api/rooms/:code/shapes` | Get room shapes |
-| POST | `/api/rooms/:code/shapes` | Save shape |
-| DELETE | `/api/rooms/:code/shapes/:id` | Delete shape |
-| DELETE | `/api/rooms/:code/shapes` | Clear all shapes |
-
 See [API_DOCS.md](API_DOCS.md) for detailed documentation.
 
 ## Database Schema
