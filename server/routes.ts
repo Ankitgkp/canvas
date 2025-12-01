@@ -175,4 +175,117 @@ router.get("/health", (req, res) => {
   });
 });
 
+function generateRoomCode() {
+  return Math.random().toString(36).substring(2, 8).toUpperCase();
+}
+
+router.post("/rooms", authenticateToken, async (req, res) => {
+  try {
+    const userId = (req as any).user.userId;
+    const { name } = req.body;
+    const roomCode = generateRoomCode();
+    const room = await prisma.room.create({
+      data: { name: name || "My Room", roomCode, userId }
+    });
+    res.status(201).json({ room });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to create room" });
+  }
+});
+
+router.get("/rooms", authenticateToken, async (req, res) => {
+  try {
+    const userId = (req as any).user.userId;
+    const rooms = await prisma.room.findMany({
+      where: { userId },
+      orderBy: { createdAt: 'desc' }
+    });
+    res.json({ rooms });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to get rooms" });
+  }
+});
+
+router.get("/rooms/:roomCode", authenticateToken, async (req, res) => {
+  try {
+    const roomCode = req.params.roomCode;
+    const room = await prisma.room.findUnique({
+      where: { roomCode }
+    });
+    if (!room) {
+      return res.status(404).json({ error: "Room not found" });
+    }
+    res.json({ room });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to get room" });
+  }
+});
+
+router.get("/rooms/:roomCode/shapes", authenticateToken, async (req, res) => {
+  try {
+    const roomCode = req.params.roomCode;
+    const room = await prisma.room.findUnique({ where: { roomCode } });
+    if (!room) {
+      return res.status(404).json({ error: "Room not found" });
+    }
+    const shapes = await prisma.shape.findMany({
+      where: { roomId: room.id },
+      orderBy: { createdAt: 'asc' }
+    });
+    res.json({ shapes });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to get shapes" });
+  }
+});
+
+router.post("/rooms/:roomCode/shapes", authenticateToken, async (req, res) => {
+  try {
+    const roomCode = req.params.roomCode;
+    const { shapeId, data } = req.body;
+    const room = await prisma.room.findUnique({ where: { roomCode } });
+    if (!room) {
+      return res.status(404).json({ error: "Room not found" });
+    }
+    const shape = await prisma.shape.create({
+      data: { shapeId, data, roomId: room.id }
+    });
+    res.status(201).json({ shape });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to save shape" });
+  }
+});
+
+router.delete("/rooms/:roomCode/shapes/:id", authenticateToken, async (req, res) => {
+  try {
+    const roomCode = req.params.roomCode;
+    const shapeId = parseInt(req.params.id);
+    const room = await prisma.room.findUnique({ where: { roomCode } });
+    if (!room) {
+      return res.status(404).json({ error: "Room not found" });
+    }
+    await prisma.shape.deleteMany({
+      where: { id: shapeId, roomId: room.id }
+    });
+    res.json({ message: "Shape deleted" });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to delete shape" });
+  }
+});
+
+router.delete("/rooms/:roomCode/shapes", authenticateToken, async (req, res) => {
+  try {
+    const roomCode = req.params.roomCode;
+    const room = await prisma.room.findUnique({ where: { roomCode } });
+    if (!room) {
+      return res.status(404).json({ error: "Room not found" });
+    }
+    await prisma.shape.deleteMany({
+      where: { roomId: room.id }
+    });
+    res.json({ message: "All shapes deleted" });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to delete shapes" });
+  }
+});
+
 export default router;

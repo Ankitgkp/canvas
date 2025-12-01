@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 import { DEFAULT_CTX } from "./constants";
+import { AuthService } from "./auth";
 
 export class DrawingCanvas {
     canvas: HTMLCanvasElement;
@@ -14,17 +15,21 @@ export class DrawingCanvas {
 
     isDrawing: boolean;
     keysPressed: { [key: string]: boolean };
+    roomCode: string;
 
     past: Array<{
         id: string;
         data: ImageData;
+        dbId?: number;
     }>;
     future: Array<{
         id: string;
         data: ImageData;
+        dbId?: number;
     }>;
 
-    constructor() {
+    constructor(roomCode: string) {
+        this.roomCode = roomCode;
         const canvas = document.getElementById("canvas") as HTMLCanvasElement;
         this.canvas = canvas;
         this.ctx = canvas.getContext("2d", {
@@ -52,6 +57,34 @@ export class DrawingCanvas {
         this.initCanvas();
         this.initUserEvents();
         this.initDrawingEvents();
+        this.loadShapesFromServer();
+    }
+
+    async loadShapesFromServer() {
+        try {
+            const shapes = await AuthService.getShapes(this.roomCode);
+            if (shapes && shapes.length > 0) {
+                const lastShape = shapes[shapes.length - 1];
+                const img = new Image();
+                img.onload = () => {
+                    this.ctx.drawImage(img, 0, 0);
+                    this.past = [];
+                    this.past.push({
+                        id: lastShape.shapeId,
+                        data: this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height),
+                        dbId: lastShape.id
+                    });
+                    this.undoBtn.disabled = false;
+                };
+                img.src = lastShape.data;
+            }
+        } catch (error) {
+            console.log("Could not load shapes");
+        }
+    }
+
+    canvasToBase64() {
+        return this.canvas.toDataURL("image/png");
     }
 
     initCanvas() {
@@ -186,24 +219,37 @@ export class DrawingCanvas {
     finish() {
         this.isDrawing = false;
 
-        // Once mouse up, current image can be stored away
         const currentImageData = this.ctx.getImageData(
             0,
             0,
             this.canvas.width,
             this.canvas.height
         );
-        // Unique ID helps us quickly distinguish stored image data
         const uniqueId = uuidv4();
-        this.past.push({
+        
+        const shapeEntry = {
             id: uniqueId,
             data: currentImageData,
-        });
+            dbId: undefined as number | undefined
+        };
+        
+        this.past.push(shapeEntry);
         this.trimStorage(this.past);
         this.undoBtn.disabled = false;
 
         this.future = [];
         this.redoBtn.disabled = true;
+
+        this.saveShapeToServer(uniqueId, shapeEntry);
+    }
+
+    async saveShapeToServer(shapeId: string, shapeEntry: any) {
+        try {
+            const savedShape = await AuthService.saveShape(this.roomCode, shapeId, this.canvasToBase64());
+            shapeEntry.dbId = savedShape.id;
+        } catch (error) {
+            console.log("Could not save shape");
+        }
     }
 
     undo() {
@@ -222,10 +268,22 @@ export class DrawingCanvas {
                     0
                 );
             }
+
+            if (lastAddedImage.dbId) {
+                this.deleteShapeFromServer(lastAddedImage.dbId);
+            }
         }
 
         if (this.past.length <= 1) {
             this.undoBtn.disabled = true;
+        }
+    }
+
+    async deleteShapeFromServer(dbId: number) {
+        try {
+            await AuthService.deleteShape(this.roomCode, dbId);
+        } catch (error) {
+            console.log("Could not delete shape");
         }
     }
 
@@ -240,6 +298,8 @@ export class DrawingCanvas {
             this.undoBtn.disabled = false;
 
             this.ctx.putImageData(lastRemovedImage.data, 0, 0);
+
+            this.saveShapeToServer(lastRemovedImage.id, lastRemovedImage);
         }
 
         if (this.future.length === 0) {
@@ -251,9 +311,18 @@ export class DrawingCanvas {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
         this.past = [];
-        // Restart storage of past images
         this.initHistory();
         this.redoBtn.disabled = true;
+
+        this.deleteAllShapesFromServer();
+    }
+
+    async deleteAllShapesFromServer() {
+        try {
+            await AuthService.deleteAllShapes(this.roomCode);
+        } catch (error) {
+            console.log("Could not delete shapes");
+        }
     }
 
     download() {
@@ -275,7 +344,7 @@ export class DrawingCanvas {
     }
 
     trimStorage(
-        data: Array<{ id: string; data: ImageData }>,
+        data: Array<{ id: string; data: ImageData; dbId?: number }>,
         MAX: number = 25
     ) {
         while (data.length > MAX) {
