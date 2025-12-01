@@ -28,7 +28,6 @@ export const errorHandler = (err: Error, req: express.Request, res: express.Resp
     body: req.body,
   });
   
-  // Ensure we always send a JSON response
   if (!res.headersSent) {
     res.status(500).json({ error: "Internal server error", details: err.message });
   }

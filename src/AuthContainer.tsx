@@ -14,7 +14,6 @@ export const AuthContainer: React.FC<AuthContainerProps> = ({
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        // Check if user is already authenticated
         const checkAuth = async () => {
             const token = AuthService.getToken();
             if (token) {

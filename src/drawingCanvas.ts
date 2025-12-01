@@ -50,7 +50,6 @@ export class DrawingCanvas {
         this.isDrawing = false;
         this.keysPressed = {};
 
-        /** @todo Set limit for how many actions/images are saved */
         this.past = [];
         this.future = [];
 
@@ -155,7 +154,6 @@ export class DrawingCanvas {
             this.download();
         });
 
-        // Listens for undo and redo keydown events
         document.addEventListener("keydown", (event) => {
             this.keysPressed[event.key] = true;
             console.log(this.keysPressed);
@@ -178,7 +176,6 @@ export class DrawingCanvas {
             }
         });
 
-        // Clear previous keys pressed
         document.addEventListener("keyup", () => {
             for (const prop of Object.getOwnPropertyNames(this.keysPressed)) {
                 delete this.keysPressed[prop];
@@ -194,7 +191,6 @@ export class DrawingCanvas {
         });
 
         this.canvas.addEventListener("mousemove", (e) => {
-            // On mouse move, this.draw is only called when drawing (mouse down)
             if (!this.isDrawing || !this.isEventInsideCanvas(e)) return;
             this.draw(e);
         });

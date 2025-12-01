@@ -7,7 +7,6 @@ import { SERVER_CONFIG, SECURITY_CONFIG } from "./config.js";
 
 const router = express.Router();
 
-// Register route
 router.post("/register", async (req, res) => {
   try {
     const { email, username, password } = req.body;
@@ -16,7 +15,6 @@ router.post("/register", async (req, res) => {
       return res.status(400).json({ error: "Email, username and password are required" });
     }
 
-    // Check if user already exists
     const existingUser = await prisma.user.findFirst({
       where: {
         OR: [
@@ -30,10 +28,7 @@ router.post("/register", async (req, res) => {
       return res.status(400).json({ error: "User with this email or username already exists" });
     }
 
-    // Hash password
     const hashedPassword = await bcrypt.hash(password, SECURITY_CONFIG.BCRYPT_SALT_ROUNDS);
-
-    // Create user
     const user = await prisma.user.create({
       data: {
         email,
@@ -64,7 +59,6 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// Login route
 router.post("/login", async (req, res) => {
   try {
     const { identifier, password } = req.body;
@@ -73,7 +67,6 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ error: "Email/username and password are required" });
     }
 
-    // Find user by email or username
     const user = await prisma.user.findFirst({
       where: {
         OR: [
@@ -87,14 +80,12 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
-    // Check password
     const passwordMatch = await bcrypt.compare(password, user.password);
 
     if (!passwordMatch) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
-    // Generate JWT token
     const token = jwt.sign(
       { userId: user.id, email: user.email, username: user.username },
       SERVER_CONFIG.JWT_SECRET as string,
@@ -116,7 +107,6 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// Protected route - Get user profile
 router.get("/profile", authenticateToken, async (req, res) => {
   try {
     const userId = (req as any).user.userId;
@@ -166,7 +156,6 @@ router.post("/verify-token", (req, res) => {
   });
 });
 
-// Health check route
 router.get("/health", (req, res) => {
   res.json({ 
     status: "ok", 

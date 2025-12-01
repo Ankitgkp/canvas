@@ -1,6 +1,5 @@
 @import "tailwindcss";
 
-/* Custom Canvas Styles */
 #canvas {
     border: 1px solid #ccc;
     cursor: crosshair;
@@ -10,7 +9,6 @@
     background-color: white;
 }
 
-/* Brush color classes for canvas app */
 .brush-select {
     padding: 1rem;
     border-radius: 6px;

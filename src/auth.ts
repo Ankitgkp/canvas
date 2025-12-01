@@ -1,4 +1,3 @@
-// Authentication API service
 export class AuthService {
   private static BASE_URL = '/api';
 

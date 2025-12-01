@@ -13,7 +13,6 @@ export class AuthUI {
   }
 
   private init() {
-    // Check if user is already authenticated
     const token = AuthService.getToken();
     if (token) {
       this.verifyTokenAndProceed(token);
@@ -33,7 +32,6 @@ export class AuthUI {
       console.log('Token verification failed:', error);
     }
     
-    // Token is invalid, show login
     AuthService.removeToken();
     this.showAuthContainer();
   }
